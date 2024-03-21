@@ -23,7 +23,7 @@ func NewAuthenticationController(service services.AuthenticationService) *Authen
 
 func (c *AuthenticationController) Login(ctx *gin.Context) {
 	loginRequest := request.LoginRequest{}
-	err := ctx.ShouldBindJSON(&loginRequest)
+	err := ctx.ShouldBind(&loginRequest)
 	helper.ErrorPanic(err)
 
 	token, err_token := c.authenticationService.Login(loginRequest)
@@ -55,7 +55,7 @@ func (c *AuthenticationController) Login(ctx *gin.Context) {
 
 func (c *AuthenticationController) Register(ctx *gin.Context) {
 	registerRequest := request.CreateNewUserRequest{}
-	err := ctx.ShouldBindJSON(&registerRequest)
+	err := ctx.ShouldBind(&registerRequest)
 	helper.ErrorPanic(err)
 	c.authenticationService.Register(registerRequest)
 
