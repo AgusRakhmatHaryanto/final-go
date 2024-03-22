@@ -7,4 +7,5 @@ type Genre struct {
 	Name      string    `gorm:"type:varchar(255);not null"`
 	UpdatedAt time.Time
 	CreatedAt time.Time
+	Movies    Movies  `gorm:"foreignKey:GenreID"`
 }

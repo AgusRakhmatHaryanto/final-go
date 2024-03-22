@@ -8,4 +8,5 @@ type Award struct {
 	Year       int      `gorm:"type:int"`
 	UpdatedAt  time.Time
 	CreatedAt  time.Time
+	Movies		Movies `gorm:"foreignKey:AwardID"`
 }

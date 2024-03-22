@@ -25,11 +25,14 @@ func main() {
 	database := config.InitDB(&loadConfig)
 	validate := validator.New()
 
+
+	//Auto Migration
 	database.Table("users").AutoMigrate(&models.Users{})
 	database.Table("genres").AutoMigrate(&models.Genre{})
 	database.Table("awards").AutoMigrate(&models.Award{})
 	database.Table("movies").AutoMigrate(&models.Movies{})
 	database.Table("directors").AutoMigrate(&models.Director{})
+
 
 	//init repository
 	userRepository := repository.NewUserRepositoryImpl(database)
@@ -70,7 +73,7 @@ func main() {
 	server := &http.Server{
 		Addr:    ":" + loadConfig.ServerPort,
 		Handler: router,
-		
+
 	}
 
 	server_err := server.ListenAndServe()

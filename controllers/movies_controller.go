@@ -69,7 +69,7 @@ func (c *MovieController) FindMovieById(ctx *gin.Context) {
 func (c *MovieController) CreateMovie(ctx *gin.Context) {
 	log.Info().Msg("Create Movie")
 	createMovieRequest:= request.CreateNewMoviesRequest{}
-	err := ctx.ShouldBindJSON(&createMovieRequest)
+	err := ctx.ShouldBind(&createMovieRequest)
 	helper.ErrorPanic(err)
 	c.movieService.SaveMovie(createMovieRequest)
 	webResponse := response.WebResponse{
@@ -85,7 +85,7 @@ func (c *MovieController) CreateMovie(ctx *gin.Context) {
 func (c *MovieController) UpdateMovie(ctx *gin.Context) {
 	log.Info().Msg("Update Movie")
 	movieRequest := request.UpdateMoviesRequest{}
-	err := ctx.ShouldBindJSON(&movieRequest)
+	err := ctx.ShouldBind(&movieRequest)
 	helper.ErrorPanic(err)
 	movieId := ctx.Param("id")
 	id, err := strconv.Atoi(movieId)
