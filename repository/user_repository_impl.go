@@ -13,9 +13,12 @@ type UsersRepositoryImpl struct {
 	db *gorm.DB
 }
 
+
+
 func NewUserRepositoryImpl(db *gorm.DB) UsersRepository {
 	return &UsersRepositoryImpl{db: db}
 }
+
 
 // Delete implements UsersRepository.
 func (u *UsersRepositoryImpl) Delete(userId int) {
