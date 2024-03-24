@@ -58,28 +58,28 @@ func (a *AuthenticationServiceImpl) FindByEmail(email string) response.UserRespo
 
 // Login implements AuthenticationService.
 func (a *AuthenticationServiceImpl) Login(users request.LoginRequest) (string, error) {
-	//find user in database
-	new_user, err_user := a.UsersRepository.FindByEmail(users.Email)
+    // Temukan pengguna di database
+    new_user, err_user := a.UsersRepository.FindByEmail(users.Email)
 
-	if err_user != nil {
-		return "", errors.New("user not found")
-	}
+    if err_user != nil {
+        return "", errors.New("user not found")
+    }
 
-	config, _ := config.LoadConfig(".")
+    config, _ := config.LoadConfig(".")
 
-	verify_err := utils.VerifyPassword(new_user.Password, users.Password)
+    verify_err := utils.VerifyPassword(new_user.Password, users.Password)
 
-	if verify_err != nil {
-		return "", errors.New("incorrect password")
-	}
+    if verify_err != nil {
+        return "", errors.New("incorrect password")
+    }
 
-	//generate token
-	token, err_token := utils.GenerateToken(config.TokenExpiresIn, new_user.ID, new_user.Role, config.TokenSecret)
-	helper.ErrorPanic(err_token)
+    // Hasilkan token
+    token, err_token := utils.GenerateToken(config.TokenExpiresIn, new_user.ID, new_user.Role, new_user.ID, config.TokenSecret)
+    helper.ErrorPanic(err_token)
 
-	return token, nil
-
+    return token, nil
 }
+
 
 // Register implements AuthenticationService.
 func (a *AuthenticationServiceImpl) Register(users request.RegisterNewUserRequest) {

@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"errors"
 	"fmt"
 	"time"
 
@@ -8,15 +9,15 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func GenerateToken(ttl time.Duration, payload interface{}, role string, secretJWTKey string) (string, error) {
+func GenerateToken(ttl time.Duration, payload interface{}, role string, id int, secretJWTKey string) (string, error) {
     token := jwt.New(jwt.SigningMethodHS256)
 
     now := time.Now().UTC()
     claims := token.Claims.(jwt.MapClaims)
 
-    claims["sub"] = payload
-
+    claims["id"] = id
     claims["role"] = role
+    claims["sub"] = payload
 
     claims["exp"] = now.Add(ttl).Unix()
     claims["iat"] = now.Unix()
@@ -30,6 +31,7 @@ func GenerateToken(ttl time.Duration, payload interface{}, role string, secretJW
 
     return tokenString, nil
 }
+
 
 
 func ValidateToken(token string, signedJWTKey string) (interface{}, error) {
@@ -53,19 +55,23 @@ func ValidateToken(token string, signedJWTKey string) (interface{}, error) {
 }
 
 func ExtractToken(c *gin.Context) (string, string, error) {
-	user, exist := c.Get("user")
+
+	user, exist := c.Get("currentUser")
 	if !exist {
-		return "", "", fmt.Errorf("user not found")
+		return "", "", errors.New("invalid token")
 	}
+
 	claims := user.(gin.H)
 
-	id, ok := claims["ID"].(string)
+	id, ok := claims["id"].(string)
 	if !ok {
-		return "", "", fmt.Errorf("user id not found")
+		return "", "", errors.New("invalid token")
 	}
+
 	role, ok := claims["role"].(string)
 	if !ok {
-		return "", "", fmt.Errorf("IsAdmin not found")
+		return "", "", errors.New("invalid token")
 	}
+
 	return id, role, nil
 }

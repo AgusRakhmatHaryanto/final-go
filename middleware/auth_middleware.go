@@ -56,17 +56,20 @@ func AuthMiddleware(userRepository repository.UsersRepository) gin.HandlerFunc {
 			return
 		}
 
-		ctx.Set("currentUser", result)
+		ctx.Set("currentUser", gin.H{
+			"id":    result.ID,
+			"role":  result.Role,
+		})
 		ctx.Next()
 	}
 }
 
 func IsRole(role string) gin.HandlerFunc {
-	return func(ctx *gin.Context) {
+	return func(c *gin.Context) {
 		// TODO: Implement middleware
-		id, role, err_extract := utils.ExtractToken(ctx)
+		id, role, err_extract := utils.ExtractToken(c)
 		if err_extract != nil {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"code":    http.StatusUnauthorized,
 				"status":  "failed",
 				"message": err_extract.Error(),
@@ -75,7 +78,7 @@ func IsRole(role string) gin.HandlerFunc {
 		}
 
 		if role != role {
-			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"code":    http.StatusUnauthorized,
 				"status":  "failed",
 				"message": "Unauthorized",
@@ -83,7 +86,7 @@ func IsRole(role string) gin.HandlerFunc {
 			return
 		}
 
-		ctx.Set("currentUser", id)
-		ctx.Next()
+		c.Set("currentUser", id)
+		c.Next()
 	}
 }
