@@ -4,10 +4,11 @@ import (
 	"errors"
 	"final-project/config"
 	"final-project/data/request"
+	"final-project/data/response"
 	"final-project/helper"
+	"final-project/models"
 	"final-project/repository"
 	"final-project/utils"
-	"final-project/models"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -22,6 +23,37 @@ func NewAuthenticationServiceImpl(usersRepository repository.UsersRepository, va
 		UsersRepository: usersRepository,
 		Validate:        validate,
 	}
+}
+
+// FIndByUsername implements AuthenticationService.
+func (a *AuthenticationServiceImpl) FindByUsername(username string) response.UserResponse {
+	user_data, err := a.UsersRepository.FindByUsername(username)
+	helper.ErrorPanic(err)
+
+	user_res := response.UserResponse{
+		ID:       user_data.ID,
+		Username: user_data.Username,
+		Email:    user_data.Email,
+		Password: user_data.Password,
+		Role:     user_data.Role,
+	}
+	return user_res
+}
+
+// FindByEmail implements AuthenticationService.
+func (a *AuthenticationServiceImpl) FindByEmail(email string) response.UserResponse {
+	user_data, err := a.UsersRepository.FindByEmail(email)
+
+	helper.ErrorPanic(err)
+
+	user_res := response.UserResponse{
+		ID:       user_data.ID,
+		Username: user_data.Username,
+		Email:    user_data.Email,
+		Password: user_data.Password,
+		Role:     user_data.Role,
+	}
+	return user_res
 }
 
 // Login implements AuthenticationService.
@@ -42,7 +74,7 @@ func (a *AuthenticationServiceImpl) Login(users request.LoginRequest) (string, e
 	}
 
 	//generate token
-	token, err_token := utils.GenerateToken(config.TokenExpiresIn, new_user.ID, config.TokenSecret)
+	token, err_token := utils.GenerateToken(config.TokenExpiresIn, new_user.ID, new_user.Role, config.TokenSecret)
 	helper.ErrorPanic(err_token)
 
 	return token, nil
@@ -50,15 +82,16 @@ func (a *AuthenticationServiceImpl) Login(users request.LoginRequest) (string, e
 }
 
 // Register implements AuthenticationService.
-func (a *AuthenticationServiceImpl) Register(users request.CreateNewUserRequest)  {
-	hashedPassword, err := utils.HashPassword(users.Password)
-	
+func (a *AuthenticationServiceImpl) Register(users request.RegisterNewUserRequest) {
+	hashed_password, err := utils.HashPassword(users.Password)
+
 	helper.ErrorPanic(err)
 
-	newUser:= models.Users{
+	newUser := models.Users{
 		Username: users.Username,
 		Email:    users.Email,
-		Password: hashedPassword,
+		Password: hashed_password,
+		Role:     users.Role,
 	}
 
 	a.UsersRepository.Save(newUser)

@@ -4,8 +4,11 @@ import (
 	"final-project/data/request"
 	"final-project/data/response"
 	"final-project/helper"
+	"final-project/models"
 	"final-project/repository"
 	"final-project/utils"
+	"final-project/utils/enum"
+	"final-project/validation"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -20,6 +23,26 @@ func NewUsersServiceImpl(usersRepository repository.UsersRepository, validate *v
 		userRepository: usersRepository,
 		valiadator:     validate,
 	}
+}
+
+// CreateUser implements UsersService.
+func (u *UsersServiceImpl) CreateUser(users request.CreateNewUserRequest) {
+
+	hashPassword, err := utils.HashPassword(users.Password)
+
+	helper.ErrorPanic(err)
+
+	role, errRole := validation.CheckEqual(users.Role, enum.RoleType)
+	helper.ErrorPanic(errRole)
+	newUser := models.Users{
+		Username: users.Username,
+		Email:    users.Email,
+		Password: hashPassword,
+		Role:      role,
+	}
+
+	u.userRepository.Save(newUser)
+
 }
 
 // DeleteUser implements UserService.
@@ -37,6 +60,7 @@ func (u *UsersServiceImpl) FindUserByEmail(email string) response.UserResponse {
 		Username: userData.Username,
 		Email:    userData.Email,
 		Password: userData.Password,
+		Role:     userData.Role,
 	}
 
 	return user_res
@@ -67,6 +91,7 @@ func (u *UsersServiceImpl) FindUserByUsername(username string) response.UserResp
 		Username: userData.Username,
 		Email:    userData.Email,
 		Password: userData.Password,
+		Role:     userData.Role,
 	}
 
 	return user_res

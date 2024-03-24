@@ -56,14 +56,57 @@ func (c *AuthenticationController) Login(ctx *gin.Context) {
 }
 
 func (c *AuthenticationController) Register(ctx *gin.Context) {
-	registerRequest := request.CreateNewUserRequest{}
+	var registerRequest request.RegisterNewUserRequest
 	err := ctx.ShouldBind(&registerRequest)
 	helper.ErrorPanic(err)
-	c.authenticationService.Register(registerRequest)
+	// if registerRequest.Username == "" || registerRequest.Email == "" || registerRequest.Password == "" {
+	// 	webResponse := response.WebResponse{
+	// 		Code:    http.StatusBadRequest,
+	// 		Status:  "BAD REQUEST",
+	// 		Message: "Username, Email, and Password cannot be empty",
+	// 		Data:    nil,
+	// 	}
+	// 	ctx.Header("Content-Type", "application/json")
+	// 	ctx.JSON(http.StatusBadRequest, webResponse)
+	// 	return
+	// }
+	// email_req := c.authenticationService.FindByEmail(registerRequest.Email)
+	// if email_req.ID != 0 {
+	// 	webResponse := response.WebResponse{
+	// 		Code:    http.StatusBadRequest,
+	// 		Status:  "BAD REQUEST",
+	// 		Message: "Email Already Registered",
+	// 		Data:    nil,
+	// 	}
+	// 	ctx.Header("Content-Type", "application/json")
+	// 	ctx.JSON(http.StatusBadRequest, webResponse)
+	// 	return
+	// }
+
+	// username_req := c.authenticationService.FindByUsername(registerRequest.Username)
+	// if username_req.ID != 0 {
+	// 	webResponse := response.WebResponse{
+	// 		Code:    http.StatusBadRequest,
+	// 		Status:  "BAD REQUEST",
+	// 		Message: "Username Already Registered",
+	// 		Data:    nil,
+	// 	}
+	// 	ctx.Header("Content-Type", "application/json")
+	// 	ctx.JSON(http.StatusBadRequest, webResponse)
+	// 	return
+	// }
+
+	
+	c.authenticationService.Register(request.RegisterNewUserRequest{
+		Username: registerRequest.Username,
+		Email:    registerRequest.Email,
+		Password: registerRequest.Password,
+		Role:     "admin",
+	})
 
 	// user := c.authenticationService
 	// res_regis := response.NewRegisterResponse()
-	
+
 	webResponse := response.WebResponse{
 		Code:    http.StatusOK,
 		Status:  "OK",

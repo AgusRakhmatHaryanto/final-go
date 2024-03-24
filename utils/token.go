@@ -4,46 +4,68 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/golang-jwt/jwt"
+	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v5"
 )
 
-func GenerateToken(ttl time.Duration, payload interface{}, secret string) (string, error) {
-	token := jwt.New(jwt.SigningMethodHS256)
+func GenerateToken(ttl time.Duration, payload interface{}, role string, secretJWTKey string) (string, error) {
+    token := jwt.New(jwt.SigningMethodHS256)
 
-	now := time.Now()
-	claims := token.Claims.(jwt.MapClaims)
+    now := time.Now().UTC()
+    claims := token.Claims.(jwt.MapClaims)
 
-	claims["sub"] = payload
-	claims["exp"] = now.Add(ttl).Unix()
-	claims["iat"] = now.Unix()
-	claims["nbf"] = now.Unix()
+    claims["sub"] = payload
 
-	tokenString, err := token.SignedString([]byte(secret))
+    claims["role"] = role
 
-	if err != nil {
-		return "", fmt.Errorf("could not generate token %w", err)
-	}
+    claims["exp"] = now.Add(ttl).Unix()
+    claims["iat"] = now.Unix()
+    claims["nbf"] = now.Unix()
 
-	return tokenString, nil
+    tokenString, err := token.SignedString([]byte(secretJWTKey))
+
+    if err != nil {
+        return "", fmt.Errorf("generating JWT Token failed: %w", err)
+    }
+
+    return tokenString, nil
 }
 
+
 func ValidateToken(token string, signedJWTKey string) (interface{}, error) {
-	tokenClaims, err := jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+	tok, err := jwt.Parse(token, func(jwtToken *jwt.Token) (interface{}, error) {
+		if _, ok := jwtToken.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected method: %s", jwtToken.Header["alg"])
 		}
+
 		return []byte(signedJWTKey), nil
 	})
-
 	if err != nil {
-		return nil, fmt.Errorf("invalid token: %w", err)
+		return nil, fmt.Errorf("invalidate token: %w", err)
 	}
 
-	claims, ok := tokenClaims.Claims.(jwt.MapClaims)
-
-	if !ok || !tokenClaims.Valid {
-		return nil, fmt.Errorf("invalid token claims")
+	claims, ok := tok.Claims.(jwt.MapClaims)
+	if !ok || !tok.Valid {
+		return nil, fmt.Errorf("invalid token claim")
 	}
 
 	return claims["sub"], nil
+}
+
+func ExtractToken(c *gin.Context) (string, string, error) {
+	user, exist := c.Get("user")
+	if !exist {
+		return "", "", fmt.Errorf("user not found")
+	}
+	claims := user.(gin.H)
+
+	id, ok := claims["ID"].(string)
+	if !ok {
+		return "", "", fmt.Errorf("user id not found")
+	}
+	role, ok := claims["role"].(string)
+	if !ok {
+		return "", "", fmt.Errorf("IsAdmin not found")
+	}
+	return id, role, nil
 }

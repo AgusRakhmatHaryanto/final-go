@@ -141,17 +141,14 @@ func (c *UsersController) UpdateUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotFound, webResponse)
 		return
 	}
-
 	c.userService.UpdateUser(userRequest)
-	
+
 	data_res := response.UpdateUserResponse{
 		ID:       id,
 		Username: userRequest.Username,
 		Email:    userRequest.Email,
 		Password: userRequest.Password,
 	}
-
-
 
 	webResponse := response.WebResponse{
 		Code:    http.StatusOK,
@@ -173,6 +170,60 @@ func (c *UsersController) DeleteUser(ctx *gin.Context) {
 		Code:    http.StatusOK,
 		Status:  "OK",
 		Message: "Successfully Deleted User",
+		Data:    nil,
+	}
+	ctx.Header("Content-Type", "application/json")
+	ctx.JSON(http.StatusOK, webResponse)
+}
+
+func (c *UsersController) CreateUser(ctx *gin.Context) {
+	log.Info().Msg("Create User")
+	userRequest := request.CreateNewUserRequest{}
+	err := ctx.ShouldBind(&userRequest)
+	helper.ErrorPanic(err)
+	// if userRequest.Email == "" || userRequest.Password == "" || userRequest.Username == ""  {
+	// 	webResponse := response.WebResponse{
+	// 		Code:    http.StatusBadRequest,
+	// 		Status:  "BAD REQUEST",
+	// 		Message: "Email, Password, and Username cannot be empty",
+	// 		Data:    nil,
+	// 	}
+	// 	ctx.Header("Content-Type", "application/json")
+	// 	ctx.JSON(http.StatusBadRequest, webResponse)
+	// 	return
+	// }
+
+	// username_req := c.userService.FindUserByUsername(userRequest.Username)
+	// if username_req.ID != 0 {
+	// 	webResponse := response.WebResponse{
+	// 		Code:    http.StatusBadRequest,
+	// 		Status:  "BAD REQUEST",
+	// 		Message: "Username Already Registered",
+	// 		Data:    nil,
+	// 	}
+	// 	ctx.Header("Content-Type", "application/json")
+	// 	ctx.JSON(http.StatusBadRequest, webResponse)
+	// 	return
+	// }
+
+	// email_req := c.userService.FindUserByEmail(userRequest.Email)
+	// if email_req.ID != 0 {
+	// 	webResponse := response.WebResponse{
+	// 		Code:    http.StatusBadRequest,
+	// 		Status:  "BAD REQUEST",
+	// 		Message: "Email Already Registered",
+	// 		Data:    nil,
+	// 	}
+	// 	ctx.Header("Content-Type", "application/json")
+	// 	ctx.JSON(http.StatusBadRequest, webResponse)
+	// 	return
+	// }
+
+	c.userService.CreateUser(userRequest)
+	webResponse := response.WebResponse{
+		Code:    http.StatusOK,
+		Status:  "OK",
+		Message: "Successfully Created User",
 		Data:    nil,
 	}
 	ctx.Header("Content-Type", "application/json")

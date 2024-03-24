@@ -36,12 +36,13 @@ func NewRouter(userRepository repository.UsersRepository,
 		authenticationRouter.POST("register", authenticationController.Register)
 	}
 
-	userRouter := router.Group("users")
+	userRouter := router.Group("users",middleware.IsRole("admin"))
 	{
 		userRouter.GET("", middleware.AuthMiddleware(userRepository), userController.FindAllUsers)
 		userRouter.GET("/email/:email", middleware.AuthMiddleware(userRepository), userController.GetUserByEmail)
 		userRouter.GET("/username/:username", middleware.AuthMiddleware(userRepository), userController.GetUserByUsername)
 		userRouter.GET("/:id", middleware.AuthMiddleware(userRepository), userController.FindUserById)
+		userRouter.POST("", middleware.AuthMiddleware(userRepository), userController.CreateUser)
 		userRouter.PUT("/:id", middleware.AuthMiddleware(userRepository), userController.UpdateUser)
 		userRouter.DELETE("/:id", middleware.AuthMiddleware(userRepository), userController.DeleteUser)
 	}

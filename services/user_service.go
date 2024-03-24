@@ -12,4 +12,5 @@ type UsersService interface {
 	FindUserByEmail(email string) response.UserResponse
 	FindUserByUsername(username string) response.UserResponse
 	GetAllUsers() []response.UserResponse
+	CreateUser(users request.CreateNewUserRequest)
 }
