@@ -36,15 +36,16 @@ func NewRouter(userRepository repository.UsersRepository,
 		authenticationRouter.POST("register", authenticationController.Register)
 	}
 
-	userRouter := router.Group("users",middleware.AuthMiddleware(userRepository), middleware.IsRole("admin"))
+	userRouter := router.Group("users", middleware.AuthMiddleware(userRepository))
 	{
-		userRouter.GET("", userController.FindAllUsers)
-		userRouter.GET("/email/:email", middleware.AuthMiddleware(userRepository), userController.GetUserByEmail)
-		userRouter.GET("/username/:username", middleware.AuthMiddleware(userRepository), userController.GetUserByUsername)
-		userRouter.GET("/:id", middleware.AuthMiddleware(userRepository), userController.FindUserById)
-		userRouter.POST("", middleware.AuthMiddleware(userRepository), userController.CreateUser)
-		userRouter.PUT("/:id", middleware.AuthMiddleware(userRepository), userController.UpdateUser)
-		userRouter.DELETE("/:id", middleware.AuthMiddleware(userRepository), userController.DeleteUser)
+		roleAuth := userRouter.Group("", middleware.IsRole("admin"))
+		roleAuth.GET("", userController.FindAllUsers)
+		roleAuth.GET("/email/:email", userController.GetUserByEmail)
+		roleAuth.GET("/username/:username", userController.GetUserByUsername)
+		roleAuth.GET("/:id", userController.FindUserById)
+		roleAuth.POST("", userController.CreateUser)
+		roleAuth.PUT("/:id", userController.UpdateUser)
+		roleAuth.DELETE("/:id", userController.DeleteUser)
 	}
 	genreRouter := router.Group("genres")
 	{

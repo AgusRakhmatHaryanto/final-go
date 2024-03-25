@@ -19,6 +19,7 @@ type UpdateUserRequest struct {
 	Username string `json:"username" form:"username" validate:"required,min=3,max=100"`
 	Email    string `json:"email" form:"email" validate:"required,min=3,max=100,email"`
 	Password string `json:"password" form:"password" validate:"required,min=3,max=100"`
+	Role     string `json:"role" form:"role" validate:"required"`
 }
 
 type LoginRequest struct {

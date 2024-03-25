@@ -101,7 +101,7 @@ func (c *AuthenticationController) Register(ctx *gin.Context) {
 		Username: registerRequest.Username,
 		Email:    registerRequest.Email,
 		Password: registerRequest.Password,
-		Role:     "admin",
+		Role:     "user",
 	})
 
 	// user := c.authenticationService

@@ -55,38 +55,40 @@ func AuthMiddleware(userRepository repository.UsersRepository) gin.HandlerFunc {
 			})
 			return
 		}
+		id_string := strconv.Itoa(result.ID)
 
 		ctx.Set("currentUser", gin.H{
-			"id":    result.ID,
+			"id":    id_string,
 			"role":  result.Role,
 		})
 		ctx.Next()
 	}
 }
 
-func IsRole(role string) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		// TODO: Implement middleware
-		id, role, err_extract := utils.ExtractToken(c)
-		if err_extract != nil {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"code":    http.StatusUnauthorized,
-				"status":  "failed",
-				"message": err_extract.Error(),
-			})
-			return
-		}
+func IsRole(roleType string) gin.HandlerFunc {
+    return func(c *gin.Context) {
+        // TODO: Implement middleware
+        id, role, err_extract := utils.ExtractToken(c)
+        if err_extract != nil {
+            c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+                "code":    http.StatusUnauthorized,
+                "status":  "failed",
+                "message": err_extract.Error(),
+            })
+            return
+        }
 
-		if role != role {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-				"code":    http.StatusUnauthorized,
-				"status":  "failed",
-				"message": "Unauthorized",
-			})
-			return
-		}
-
-		c.Set("currentUser", id)
-		c.Next()
-	}
+        if role != roleType { // Menggunakan roleType dari parameter fungsi
+            c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+                "code":    http.StatusUnauthorized,
+                "status":  "failed",
+                "message": "Unauthorized",
+            })
+            return
+        }
+        c.Set("currentUser", id)
+        c.Next()
+    }
 }
+
+

@@ -59,6 +59,7 @@ func (u *UsersRepositoryImpl) Update(users models.Users) {
 		Username: users.Username,
 		Email:    users.Email,
 		Password: users.Password,
+		Role:     users.Role,
 	}
 
 	result := u.db.Model(&users).Updates(updateUser)

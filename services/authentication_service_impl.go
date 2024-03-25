@@ -9,6 +9,7 @@ import (
 	"final-project/models"
 	"final-project/repository"
 	"final-project/utils"
+	"strconv"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -72,10 +73,14 @@ func (a *AuthenticationServiceImpl) Login(users request.LoginRequest) (string, e
     if verify_err != nil {
         return "", errors.New("incorrect password")
     }
+	id := strconv.Itoa(new_user.ID)
 
-    // Hasilkan token
-    token, err_token := utils.GenerateToken(config.TokenExpiresIn, new_user.ID, new_user.Role, new_user.ID, config.TokenSecret)
-    helper.ErrorPanic(err_token)
+	// Hasilkan token
+	token, err_token := utils.GenerateToken(config.TokenExpiresIn, id, new_user.Role, id,config.TokenSecret)
+
+	if err_token != nil {
+		return "", err_token
+	}
 
     return token, nil
 }

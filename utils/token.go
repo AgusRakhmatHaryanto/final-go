@@ -3,36 +3,38 @@ package utils
 import (
 	"errors"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func GenerateToken(ttl time.Duration, payload interface{}, role string, id int, secretJWTKey string) (string, error) {
-    token := jwt.New(jwt.SigningMethodHS256)
+func GenerateToken(ttl time.Duration, payload interface{}, role string, id string, secretJWTKey string) (string, error) {
+	token := jwt.New(jwt.SigningMethodHS256)
 
-    now := time.Now().UTC()
-    claims := token.Claims.(jwt.MapClaims)
+	now := time.Now().UTC()
+	claims := token.Claims.(jwt.MapClaims)
 
-    claims["id"] = id
-    claims["role"] = role
-    claims["sub"] = payload
+	claims["id"] = id
+	claims["role"] = role
+	claims["sub"] = payload
 
-    claims["exp"] = now.Add(ttl).Unix()
-    claims["iat"] = now.Unix()
-    claims["nbf"] = now.Unix()
+	claims["exp"] = now.Add(ttl).Unix()
+	claims["iat"] = now.Unix()
+	claims["nbf"] = now.Unix()
 
-    tokenString, err := token.SignedString([]byte(secretJWTKey))
+	tokenString, err := token.SignedString([]byte(secretJWTKey))
 
-    if err != nil {
-        return "", fmt.Errorf("generating JWT Token failed: %w", err)
-    }
+	if err != nil {
+		return "", fmt.Errorf("generating JWT Token failed: %w", err)
+	}
 
-    return tokenString, nil
+	log.Println(tokenString)
+	log.Println(claims)
+
+	return tokenString, nil
 }
-
-
 
 func ValidateToken(token string, signedJWTKey string) (interface{}, error) {
 	tok, err := jwt.Parse(token, func(jwtToken *jwt.Token) (interface{}, error) {
@@ -55,22 +57,24 @@ func ValidateToken(token string, signedJWTKey string) (interface{}, error) {
 }
 
 func ExtractToken(c *gin.Context) (string, string, error) {
-
 	user, exist := c.Get("currentUser")
 	if !exist {
-		return "", "", errors.New("invalid token")
+		return "", "", errors.New("current user not found in context")
 	}
 
-	claims := user.(gin.H)
+	claims, ok := user.(gin.H)
+	if !ok {
+		return "", "", errors.New("invalid type for claims")
+	}
 
 	id, ok := claims["id"].(string)
-	if !ok {
-		return "", "", errors.New("invalid token")
+	if !ok || id == "" {
+		return "", "", errors.New("invalid id claim")
 	}
 
 	role, ok := claims["role"].(string)
-	if !ok {
-		return "", "", errors.New("invalid token")
+	if !ok || role == "" {
+		return "", "", errors.New("invalid role claim")
 	}
 
 	return id, role, nil

@@ -108,6 +108,7 @@ func (u *UsersServiceImpl) GetAllUsers() []response.UserResponse {
 			Username: user.Username,
 			Email:    user.Email,
 			Password: user.Password,
+			Role:     user.Role,
 		})
 
 	}
