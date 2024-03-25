@@ -62,7 +62,7 @@ func (g *GenreServiceImpl) SaveGenre(genre request.CreateNewGenreRequest) {
 }
 
 // UpdateFenre implements GenreService.
-func (g *GenreServiceImpl) UpdateFenre(genre request.UpdateGenreRequest) {
+func (g *GenreServiceImpl) UpdateGenre(genre request.UpdateGenreRequest) {
 	genreData, err := g.genreRepository.FindById(genre.ID)
 	helper.ErrorPanic(err)
 

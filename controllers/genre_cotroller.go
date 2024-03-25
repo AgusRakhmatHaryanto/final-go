@@ -105,7 +105,7 @@ func (c *GenreController) UpdateGenre(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotFound, webResponse)
 		return
 	}
-	c.genreService.UpdateFenre(genreRequest)
+	c.genreService.UpdateGenre(genreRequest)
 	genre_res := response.UpdateGenreResponse{
 		ID:   genreRequest.ID,
 		Name: genreRequest.Name,

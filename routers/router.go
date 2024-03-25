@@ -51,36 +51,44 @@ func NewRouter(userRepository repository.UsersRepository,
 	{
 		genreRouter.GET("", middleware.AuthMiddleware(userRepository), genreController.FindAllGenres)
 		genreRouter.GET("/:id", middleware.AuthMiddleware(userRepository), genreController.FindGenreById)
-		genreRouter.POST("", middleware.AuthMiddleware(userRepository), genreController.CreateGenre)
-		genreRouter.PUT("/:id", middleware.AuthMiddleware(userRepository), genreController.UpdateGenre)
-		genreRouter.DELETE("/:id", middleware.AuthMiddleware(userRepository), genreController.DeleteGenre)
+
+		genreAuthRole := genreRouter.Group("", middleware.IsRole("admin"))
+		genreAuthRole.POST("", genreController.CreateGenre)
+		genreAuthRole.PUT("/:id",  genreController.UpdateGenre)
+		genreAuthRole.DELETE("/:id", genreController.DeleteGenre)
 	}
 
 	awardRouter := router.Group("awards")
 	{
 		awardRouter.GET("", middleware.AuthMiddleware(userRepository), awardController.FindAllAwards)
 		awardRouter.GET("/:id", middleware.AuthMiddleware(userRepository), awardController.FindAwardById)
-		awardRouter.POST("", middleware.AuthMiddleware(userRepository), awardController.CreateAward)
-		awardRouter.PUT("/:id", middleware.AuthMiddleware(userRepository), awardController.UpdateAward)
-		awardRouter.DELETE("/:id", middleware.AuthMiddleware(userRepository), awardController.DeleteAward)
+
+		awardAuthRole := awardRouter.Group("",middleware.AuthMiddleware(userRepository), middleware.IsRole("admin"))
+		awardAuthRole.POST("", awardController.CreateAward)
+		awardAuthRole.PUT("/:id", awardController.UpdateAward)
+		awardAuthRole.DELETE("/:id", awardController.DeleteAward)
 	}
 
 	directorRouter := router.Group("directors")
 	{
 		directorRouter.GET("", middleware.AuthMiddleware(userRepository), directorController.FindAllDirectors)
 		directorRouter.GET("/:id", middleware.AuthMiddleware(userRepository), directorController.FindDirectorById)
-		directorRouter.POST("", middleware.AuthMiddleware(userRepository), directorController.CreateDirector)
-		directorRouter.PUT("/:id", middleware.AuthMiddleware(userRepository), directorController.UpdateDirector)
-		directorRouter.DELETE("/:id", middleware.AuthMiddleware(userRepository), directorController.DeleteDirector)
+
+		directorAuthRole := directorRouter.Group("",middleware.AuthMiddleware(userRepository), middleware.IsRole("admin"))
+		directorAuthRole.POST("",  directorController.CreateDirector)
+		directorAuthRole.PUT("/:id", directorController.UpdateDirector)
+		directorAuthRole.DELETE("/:id", directorController.DeleteDirector)
 	}
 
 	movieRouter := router.Group("movies")
 	{
 		movieRouter.GET("", middleware.AuthMiddleware(userRepository), movieController.FindAllMovies)
 		movieRouter.GET("/:id", middleware.AuthMiddleware(userRepository), movieController.FindMovieById)
-		movieRouter.POST("", middleware.AuthMiddleware(userRepository), movieController.CreateMovie)
-		movieRouter.PUT("/:id", middleware.AuthMiddleware(userRepository), movieController.UpdateMovie)
-		movieRouter.DELETE("/:id", middleware.AuthMiddleware(userRepository), movieController.DeleteMovie)
+
+		movieAuthRole := movieRouter.Group("",middleware.AuthMiddleware(userRepository), middleware.IsRole("admin"))
+		movieAuthRole.POST("", movieController.CreateMovie)
+		movieAuthRole.PUT("/:id", movieController.UpdateMovie)
+		movieAuthRole.DELETE("/:id", movieController.DeleteMovie)
 	}
 	return service
 }

@@ -67,7 +67,7 @@ func (c *DirectorsController) FindDirectorById(ctx *gin.Context) {
 func (c *DirectorsController) CreateDirector(ctx *gin.Context) {
 	log.Info().Msg("Create Director")
 	directorRequest :=request.CreateNewDirectorRequest{}
-	err := ctx.ShouldBindJSON(&directorRequest)
+	err := ctx.ShouldBind(&directorRequest)
 	helper.ErrorPanic(err)
 	c.directorService.SaveDirector(directorRequest)
 
@@ -83,7 +83,7 @@ func (c *DirectorsController) CreateDirector(ctx *gin.Context) {
 func (c *DirectorsController) UpdateDirector(ctx *gin.Context) {
 	log.Info().Msg("Update Director")
 	directorRequest :=request.UpdateDirectorRequest{}
-	err := ctx.ShouldBindJSON(&directorRequest)
+	err := ctx.ShouldBind(&directorRequest)
 	helper.ErrorPanic(err)
 	directorId := ctx.Param("id")
 	id, err := strconv.Atoi(directorId)

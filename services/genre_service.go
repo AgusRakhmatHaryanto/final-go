@@ -6,7 +6,7 @@ import (
 )
 
 type GenreService interface {
-	UpdateFenre(genre request.UpdateGenreRequest)
+	UpdateGenre(genre request.UpdateGenreRequest)
 	SaveGenre(genre request.CreateNewGenreRequest)
 	DeleteGenre(genreId int)
 	FindGenreById(genreId int) response.GenreResponse
