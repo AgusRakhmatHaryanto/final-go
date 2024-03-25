@@ -11,4 +11,5 @@ type MovieService interface {
 	DeleteMovie(movieId int)
 	FindMovieById(movieId int) response.MovieGetAllResponse
 	GetAllMovies() []response.MovieGetAllResponse
+	
 }

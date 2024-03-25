@@ -22,22 +22,22 @@ func NewUserRepositoryImpl(db *gorm.DB) UsersRepository {
 
 // Delete implements UsersRepository.
 func (u *UsersRepositoryImpl) Delete(userId int) {
-	var users models.Users
+	var users models.User
 	result := u.db.Where("id = ?", userId).Delete(&users)
 	helper.ErrorPanic(result.Error)
 }
 
 // FindAll implements UsersRepository.
-func (u *UsersRepositoryImpl) FindAll() []models.Users {
-	var users []models.Users
+func (u *UsersRepositoryImpl) FindAll() []models.User {
+	var users []models.User
 	result := u.db.Find(&users)
 	helper.ErrorPanic(result.Error)
 	return users
 }
 
 // FindById implements UsersRepository.
-func (u *UsersRepositoryImpl) FindById(userId int) (models.Users, error) {
-	var users models.Users
+func (u *UsersRepositoryImpl) FindById(userId int) (models.User, error) {
+	var users models.User
 	result := u.db.Find(&users, userId)
 	if result != nil {
 		return users, nil
@@ -47,13 +47,13 @@ func (u *UsersRepositoryImpl) FindById(userId int) (models.Users, error) {
 }
 
 // Save implements UsersRepository.
-func (u *UsersRepositoryImpl) Save(users models.Users) {
+func (u *UsersRepositoryImpl) Save(users models.User) {
 	result := u.db.Create(&users)
 	helper.ErrorPanic(result.Error)
 }
 
 // Update implements UsersRepository.
-func (u *UsersRepositoryImpl) Update(users models.Users) {
+func (u *UsersRepositoryImpl) Update(users models.User) {
 	var updateUser = request.UpdateUserRequest{
 		ID:       users.ID,
 		Username: users.Username,
@@ -67,8 +67,8 @@ func (u *UsersRepositoryImpl) Update(users models.Users) {
 }
 
 // findByUsername implements UsersRepository.
-func (u *UsersRepositoryImpl) FindByUsername(username string) (models.Users, error) {
-	var users models.Users
+func (u *UsersRepositoryImpl) FindByUsername(username string) (models.User, error) {
+	var users models.User
 	result := u.db.First(&users, "username = ?", username)
 
 	if result.Error != nil {
@@ -79,8 +79,8 @@ func (u *UsersRepositoryImpl) FindByUsername(username string) (models.Users, err
 }
 
 // findByEmail implements UsersRepository.
-func (u *UsersRepositoryImpl) FindByEmail(email string) (models.Users, error) {
-	var users models.Users
+func (u *UsersRepositoryImpl) FindByEmail(email string) (models.User, error) {
+	var users models.User
 	result := u.db.Where("email = ?", email).First(&users)
 	if result.Error != nil {
 		return users, errors.New("user not found")

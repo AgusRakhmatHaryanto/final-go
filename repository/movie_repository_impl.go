@@ -15,25 +15,61 @@ func NewMovieRepositoryImpl(db *gorm.DB) MovieRepository {
 	return &MovieRepositoryImpl{DB: db}
 }
 
+// FindAwardById implements MovieRepository.
+func (a *MovieRepositoryImpl) FindAwardById(id int) (models.Award, error) {
+	var award models.Award
+
+	result := a.DB.Where("id = ?", id).Find(&award)
+	helper.ErrorPanic(result.Error)
+	return award, nil
+}
+
+// FindGenreById implements MovieRepository.
+func (g *MovieRepositoryImpl) FindGenreById(id int) (models.Genre, error) {
+	var genre models.Genre
+
+	result := g.DB.Where("id = ?", id).Find(&genre)
+	helper.ErrorPanic(result.Error)
+	return genre, nil
+}
+
+
+// FindAllAwards implements MovieRepository.
+func (a *MovieRepositoryImpl) FindAllAwards() []models.Award {
+	var awards []models.Award
+
+	result := a.DB.Find(&awards)
+	helper.ErrorPanic(result.Error)
+	return awards
+}
+
+// FindAllGenres implements MovieRepository.
+func (g *MovieRepositoryImpl) FindAllGenres() []models.Genre {
+	var genres []models.Genre
+	result := g.DB.Find(&genres)
+	helper.ErrorPanic(result.Error)
+	return genres
+}
+
 // Delete implements MovieRepository.
 func (m *MovieRepositoryImpl) Delete(id int) {
-	var movie models.Movies
+	var movie models.Movie
 
 	result := m.DB.Where("id = ?", id).Delete(&movie)
 	helper.ErrorPanic(result.Error)
 }
 
 // FindAll implements MovieRepository.
-func (m *MovieRepositoryImpl) FindAll() []models.Movies {
-	var movies []models.Movies
+func (m *MovieRepositoryImpl) FindAll() []models.Movie {
+	var movies []models.Movie
 	result := m.DB.Find(&movies)
 	helper.ErrorPanic(result.Error)
 	return movies
 }
 
 // FindById implements MovieRepository.
-func (m *MovieRepositoryImpl) FindById(id int) (models.Movies, error) {
-	var movie models.Movies
+func (m *MovieRepositoryImpl) FindById(id int) (models.Movie, error) {
+	var movie models.Movie
 	result := m.DB.Where("id = ?", id).Find(&movie)
 	if result.RowsAffected == 0 {
 		return movie, result.Error
@@ -42,17 +78,17 @@ func (m *MovieRepositoryImpl) FindById(id int) (models.Movies, error) {
 }
 
 // Save implements MovieRepository.
-func (m *MovieRepositoryImpl) Save(movie models.Movies) {
+func (m *MovieRepositoryImpl) Save(movie models.Movie) {
 	result := m.DB.Create(&movie)
 	helper.ErrorPanic(result.Error)
 }
 
 // Update implements MovieRepository.
-func (m *MovieRepositoryImpl) Update(movie models.Movies) {
-	var updateMovie = models.Movies{
-		ID:   movie.ID,
-		Title: movie.Title,
-		Year: movie.Year,
+func (m *MovieRepositoryImpl) Update(movie models.Movie) {
+	var updateMovie = models.Movie{
+		ID:      movie.ID,
+		Title:   movie.Title,
+		Year:    movie.Year,
 		AwardID: movie.AwardID,
 		GenreID: movie.GenreID,
 	}
@@ -62,4 +98,3 @@ func (m *MovieRepositoryImpl) Update(movie models.Movies) {
 		helper.ErrorPanic(result.Error)
 	}
 }
-

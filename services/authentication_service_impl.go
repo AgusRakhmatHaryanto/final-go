@@ -92,7 +92,7 @@ func (a *AuthenticationServiceImpl) Register(users request.RegisterNewUserReques
 
 	helper.ErrorPanic(err)
 
-	newUser := models.Users{
+	newUser := models.User{
 		Username: users.Username,
 		Email:    users.Email,
 		Password: hashed_password,

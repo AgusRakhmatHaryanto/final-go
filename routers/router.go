@@ -36,9 +36,9 @@ func NewRouter(userRepository repository.UsersRepository,
 		authenticationRouter.POST("register", authenticationController.Register)
 	}
 
-	userRouter := router.Group("users", middleware.AuthMiddleware(userRepository))
+	userRouter := router.Group("users")
 	{
-		roleAuth := userRouter.Group("", middleware.IsRole("admin"))
+		roleAuth := userRouter.Group("")
 		roleAuth.GET("", userController.FindAllUsers)
 		roleAuth.GET("/email/:email", userController.GetUserByEmail)
 		roleAuth.GET("/username/:username", userController.GetUserByUsername)
@@ -52,7 +52,7 @@ func NewRouter(userRepository repository.UsersRepository,
 		genreRouter.GET("", middleware.AuthMiddleware(userRepository), genreController.FindAllGenres)
 		genreRouter.GET("/:id", middleware.AuthMiddleware(userRepository), genreController.FindGenreById)
 
-		genreAuthRole := genreRouter.Group("", middleware.IsRole("admin"))
+		genreAuthRole := genreRouter.Group("", middleware.AuthMiddleware(userRepository),middleware.IsRole("admin"))
 		genreAuthRole.POST("", genreController.CreateGenre)
 		genreAuthRole.PUT("/:id",  genreController.UpdateGenre)
 		genreAuthRole.DELETE("/:id", genreController.DeleteGenre)

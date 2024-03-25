@@ -6,7 +6,7 @@ import (
 )
 
 
-type Users struct {
+type User struct {
 	ID        int    `gorm:"primaryKey;type:int"`
 	Username  string `gorm:"type:varchar(255);not null"`
 	Email     string `gorm:"type:varchar(255);uniqueIndex;not null"`

@@ -13,12 +13,14 @@ import (
 type DirectorServiceImpl struct {
 	directorRepository repository.DirectorRepository
 	validator          *validator.Validate
+	movieService       MovieService
 }
 
-func NewDirectorServiceImpl(directorRepository repository.DirectorRepository, validate *validator.Validate) DirectorService {
+func NewDirectorServiceImpl(directorRepository repository.DirectorRepository, validate *validator.Validate, movieService MovieService) DirectorService {
 	return &DirectorServiceImpl{
 		directorRepository: directorRepository,
 		validator:          validate,
+		movieService:       movieService,
 	}
 }
 
@@ -30,13 +32,15 @@ func (d *DirectorServiceImpl) DeleteDirector(directorId int) {
 // FindAllDirector implements DirectorService.
 func (d *DirectorServiceImpl) FindAllDirector() []response.DirectorGetAllResponse {
 	director := d.directorRepository.FindAll()
-	
+
 	var director_res []response.DirectorGetAllResponse
 	for _, v := range director {
+		movie := d.movieService.FindMovieById(v.MovieID)
 		director_res = append(director_res, response.DirectorGetAllResponse{
 			ID:      v.ID,
 			Name:    v.Name,
 			MovieID: v.MovieID,
+			Movie:   movie,
 		})
 	}
 	return director_res
@@ -46,10 +50,12 @@ func (d *DirectorServiceImpl) FindAllDirector() []response.DirectorGetAllRespons
 func (d *DirectorServiceImpl) FindDirectorById(directorId int) response.DirectorGetAllResponse {
 	director, err := d.directorRepository.FindById(directorId)
 	helper.ErrorPanic(err)
+	movie := d.movieService.FindMovieById(director.MovieID)
 	return response.DirectorGetAllResponse{
 		ID:      director.ID,
 		Name:    director.Name,
 		MovieID: director.MovieID,
+		Movie:   movie,
 	}
 }
 
@@ -72,4 +78,3 @@ func (d *DirectorServiceImpl) UpdateDirector(director request.UpdateDirectorRequ
 	directorData.MovieID = director.MovieID
 	d.directorRepository.Update(directorData)
 }
-

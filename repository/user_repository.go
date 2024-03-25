@@ -3,11 +3,11 @@ package repository
 import "final-project/models"
 
 type UsersRepository interface {
-	Save(users models.Users)
-	Update(users models.Users)
+	Save(users models.User)
+	Update(users models.User)
 	Delete(userId int)
-	FindById(userId int) (models.Users, error)
-	FindAll() []models.Users
-	FindByUsername(username string) (models.Users, error)
-	FindByEmail(email string) (models.Users, error)
+	FindById(userId int) (models.User, error)
+	FindAll() []models.User
+	FindByUsername(username string) (models.User, error)
+	FindByEmail(email string) (models.User, error)
 }

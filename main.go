@@ -27,10 +27,10 @@ func main() {
 
 
 	//Auto Migration
-	database.Table("users").AutoMigrate(&models.Users{})
+	database.Table("users").AutoMigrate(&models.User{})
 	database.Table("genres").AutoMigrate(&models.Genre{})
 	database.Table("awards").AutoMigrate(&models.Award{})
-	database.Table("movies").AutoMigrate(&models.Movies{})
+	database.Table("movies").AutoMigrate(&models.Movie{})
 	database.Table("directors").AutoMigrate(&models.Director{})
 
 
@@ -46,8 +46,8 @@ func main() {
 	userService := services.NewUsersServiceImpl(userRepository, validate)
 	genreService := services.NewGenreServiceImpl(genreRepository, validate)
 	awardService := services.NewAwardServiceImpl(awayRepository, validate)
-	movieService := services.NewMovieServiceImpl(movieRepository, validate)
-	directorService := services.NewDirectorServiceImpl(directorRepository, validate)
+	movieService := services.NewMovieServiceImpl(movieRepository, validate, awardService, genreService)
+	directorService := services.NewDirectorServiceImpl(directorRepository, validate, movieService)
 
 
 	//init controller

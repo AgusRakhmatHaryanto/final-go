@@ -26,7 +26,7 @@ type DirectorGetAllResponse struct {
 	ID      int                      `json:"id"`
 	Name    string                   `json:"name"`
 	MovieID int                      `json:"movie_id"`
-	Movie   DirectorGetMovieResponse `json:"movie"`
+	Movie   MovieGetAllResponse
 }
 
 type DeleteDirectorResponse struct {

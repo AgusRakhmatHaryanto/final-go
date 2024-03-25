@@ -34,7 +34,7 @@ func (u *UsersServiceImpl) CreateUser(users request.CreateNewUserRequest) {
 
 	role, errRole := validation.CheckEqual(users.Role, enum.RoleType)
 	helper.ErrorPanic(errRole)
-	newUser := models.Users{
+	newUser := models.User{
 		Username: users.Username,
 		Email:    users.Email,
 		Password: hashPassword,

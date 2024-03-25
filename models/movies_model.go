@@ -2,7 +2,7 @@ package models
 
 import "time"
 
-type Movies struct {
+type Movie struct {
 	ID        int    `gorm:"primaryKey;type:int"`
 	Title     string `gorm:"type:varchar(255);not null"`
 	Year      int    `gorm:"type:int"`
